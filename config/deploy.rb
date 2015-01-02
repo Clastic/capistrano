@@ -32,6 +32,12 @@ namespace :deploy do
     on roles(:app) do |host|
       within release_path do
         execute :chmod, '-R 777 app/logs app/cache'
+        if test "[ -d #{current_path.join('vendor')} ]"
+			execute :cp, "-R", current_path.join('vendor'), release_path.join('vendor')
+		end
+        if test "[ -d #{current_path.join('node_modules')} ]"
+			execute :cp, "-R", current_path.join('node_modules'), release_path.join('node_modules')
+		end
         execute :make, "install"
       end
     end
