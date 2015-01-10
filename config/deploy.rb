@@ -32,9 +32,8 @@ namespace :deploy do
     on roles(:app) do |host|
       within release_path do
         execute :chmod, '-R 777 app/logs app/cache'
-        execute 'HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`'
-        execute 'setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs'
-        execute 'setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs'
+        execute :setfacl, '-R -m u:"www-data":rwX -m u:`whoami`:rwX app/cache app/logs'
+        execute :setfacl, '-dR -m u:"www-data":rwX -m u:`whoami`:rwX app/cache app/logs'
         if test "[ -d #{current_path.join('vendor')} ]"
           execute :cp, "-R", current_path.join('vendor'), release_path.join('vendor')
         end
