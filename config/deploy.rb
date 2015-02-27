@@ -40,8 +40,16 @@ namespace :deploy do
         if test "[ -d #{current_path.join('node_modules')} ]"
           execute :cp, "-R", current_path.join('node_modules'), release_path.join('node_modules')
         end
+        if test "[ -d #{current_path.join('web/vendor')} ]"
+          execute :cp, "-R", current_path.join('web/vendor'), release_path.join('web/vendor')
+        end
         execute :make, "install"
       end
+    end
+  end
+  before 'deploy:finishing', :notify_slack do
+    on roles(:app) do |host|
+      execute :sh, shared_path.join('slack-bot.sh')
     end
   end
 end
